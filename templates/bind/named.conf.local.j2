@@ -1,0 +1,47 @@
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+// The following zones are managed by this DNS Server //
+{% for zone in bind9_zones|sort(attribute='name') %}
+{% set zone_type = zone.type|default('master') %}
+zone "{{ zone.name }}" {
+    type {{ zone_type }};
+{%   if zone_type == 'master' %}
+    file "{{ bind9_zonedir }}/db.{{ zone.name }}";
+{%     if zone.ddns_update_policy_grant|default() and zone.ddns_update_key|default() %}
+    update-policy {
+        grant {{ zone.ddns_update_key }} {{ zone.ddns_update_policy_grant }};
+    };
+{%     endif %}
+{%   elif zone_type == 'slave' %}
+    file "/var/lib/bind/db.{{ zone.name }}";
+{%     if zone.masters|default() or bind9_masters|default() %}
+    notify no;
+    masters {
+{%       if zone.masters|default() %}
+{%         for master in zone.masters %}
+        {{ master }};
+{%         endfor %}
+{%       elif bind9_masters|default() %}
+{%         for master in bind9_masters %}
+        {{ master.name }};
+{%         endfor %}
+{%       endif %}
+    };
+{%     endif %}
+{%   else %}
+{%      if zone_type == 'forward' %}
+    forwarders {
+{%         for fwd in zone.forwarders %}
+        {{ fwd }}; 
+{%         endfor %}
+   }; 
+{%     endif %}
+{%   endif %}
+};
+{% endfor %}

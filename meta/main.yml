@@ -1,0 +1,17 @@
+---
+galaxy_info:
+  role_name: bind9
+  author: ricsanfre
+  description: Role to install Bind9 DNS server on Ubuntu
+  company: ricsanfre.com
+  license: MIT
+  min_ansible_version: "2.4"
+  galaxy_tags:
+    - bind9
+    - dns
+    - nameserver
+  platforms:
+    - name: Ubuntu
+        - focal
+        - jammy
+        - noble

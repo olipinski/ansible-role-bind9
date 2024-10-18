@@ -1,0 +1,58 @@
+options {
+	directory "/var/cache/bind";
+
+	// If there is a firewall between you and nameservers you want
+	// to talk to, you may need to fix the firewall to allow multiple
+	// ports to talk.  See http://www.kb.cert.org/vuls/id/800113
+
+	// If your ISP provided one or more IP addresses for stable 
+	// nameservers, you probably want to use them as forwarders.  
+	// Uncomment the following block, and insert the addresses replacing 
+	// the all-0's placeholder.
+
+{% if bind9_forward|default() %}
+  forwarders {
+    {% for forwarder in bind9_forward_servers %}
+      {{ forwarder }};
+    {% endfor %}
+  };
+{% endif %}
+
+	//========================================================================
+	// If BIND logs error messages about the root key being expired,
+	// you will need to update your keys.  See https://www.isc.org/bind-keys
+	//========================================================================
+	dnssec-validation {{ bind9_dnssec_validation }};
+   
+   // Listening on
+{% if bind9_enable_ipv6 %}
+	listen-on-v6 { {% if bind9_listen_on_v6|default() %}{% for ip in bind9_listen_on_v6 %}{{ ip }};{% endfor %}{% else %}any{% endif %} };
+{% endif %}
+	listen-on { {% if bind9_listen_on|default() %}{% for ip in bind9_listen_on %}{{ ip }};{% endfor %}{% else %}any{% endif %}; };
+{% if bind9_recursor %}
+    // Recursion configuration
+	recursion {{ bind9_recursor|default()|ternary('yes', 'no') }};
+	allow-recursion { {{ bind9_acl_network|default()|ternary('networks', 'any') }}; };
+{% endif %}
+    // Limit querying
+	allow-query { {% if bind9_acl_network|default() %}networks{% else %}any{% endif %}; };
+};
+
+{% if bind9_acl_networks|default() %}
+// Configure ACLs
+acl networks {
+	// Permitted for queries
+{%   for network in bind9_acl_networks %}
+	{{ network }};
+{%   endfor %}
+};
+{% endif %}
+
+{% for zone in bind9_zones|selectattr('ddns_update_key','defined')|list|default([]) %}
+{%   if zone_type|default(bind9_zone_type|default('master')) == 'master' %}
+{%     if loop.first %}
+// The following keys are used for dynamic DNS updates
+{%     endif %}
+include "/etc/bind/keys/{{zone.ddns_update_key}}.key";
+{%   endif %}
+{% endfor %}

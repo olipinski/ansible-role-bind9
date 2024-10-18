@@ -1,0 +1,66 @@
+---
+- name: Converge
+  hosts: all
+  become: true
+  gather_facts: true
+  roles:
+    - role: ricsanfre.bind9
+      bind9_authoritative: true
+      bind9_forward: true
+      bind9_recursor: true
+      bind9_forward_servers:
+        - 8.8.8.8
+        - 4.4.4.4
+      bind9_generate_ddns_key: true
+      bind9_zones:
+        - name: homelab.example.com
+          type: master
+          ddns_update_key: ddnskey
+          ddns_update_policy_grant: "zonesub any"
+          default_ttl: 600
+          serial: 2024101102
+          refresh: 1D
+          retry: 2H
+          expire: 1000H
+          # NS and other pre-formatted records values must be given as full qualified domain names, with or without final dot, but not relative to the zone
+          primary: ns.homelab.example.com         # Optional, if you don't define it, firs NS is taken
+          admin: admin.example.com
+          ns_records:
+            - ns.homelab.example.com
+          # RR values are either relative to the zone, either with a final dot when outside.
+          rrs:
+            - label: ns
+              type: A
+              rdata: 192.168.2.11
+            - label: node1
+              type: A
+              rdata: 192.168.2.11
+            - label: node2
+              type: A
+              rdata: 192.168.2.12
+            - label: node3
+              type: A
+              rdata: 192.168.2.13
+        - name: 168.192.in-addr.arpa
+          type: master
+          default_ttl: 600
+          serial: 2024101102
+          refresh: 1D
+          retry: 2H
+          expire: 1000H
+          # NS and other pre-formatted records values must be given as full qualified domain names, with or without final dot, but not relative to the zone
+          primary: ns.homelab.example.com         # Optional, if you don't define it, firs NS is taken
+          admin: admin.homelab.example.com
+          ns_records:
+            - ns1.homelab.example.com.
+          # RR values are either relative to the zone, either with a final dot when outside.
+          rrs:
+            - label: 11.2
+              type: PTR
+              rdata: ns.homelab.example.com.
+            - label: 12.2
+              type: PTR
+              rdata: node2.homelab.example.com.
+            - label: 13.2
+              type: PTR
+              rdata: node3.homelab.example.com.
