@@ -86,6 +86,6 @@
   loop_control:
     label: "{{ item.name }}"
   when: item.type | default(bind9_zone_type) == 'primary'
-  changed_when: true
+  changed_when: false
   vars:
     ansible_ssh_pipelining: true
