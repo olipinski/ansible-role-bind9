@@ -12,11 +12,3 @@
   args:
     chdir: "{{ bind9_zonedir }}"
   when: item.ddns_update_key is defined and not update_keyfile_tmp.stat.exists
-
-- name: Copy DDNS key to control host
-  ansible.builtin.fetch:
-    src: "/etc/bind/keys/{{ item.ddns_update_key }}.key"
-    dest: "{{ bind9_local_keydir }}/{{ item.ddns_update_key }}.key"
-    mode: "0640"
-    flat: true
-  when: item.ddns_update_key is defined

@@ -24,18 +24,22 @@ options {
 	//========================================================================
 	dnssec-validation {{ bind9_dnssec_validation }};
    
-   // Listening on
+    // Listening on
 {% if bind9_enable_ipv6 %}
 	listen-on-v6 { {% if bind9_listen_on_v6|default() %}{% for ip in bind9_listen_on_v6 %}{{ ip }};{% endfor %}{% else %}any{% endif %} };
 {% endif %}
 	listen-on { {% if bind9_listen_on|default() %}{% for ip in bind9_listen_on %}{{ ip }};{% endfor %}{% else %}any{% endif %}; };
 {% if bind9_recursor %}
     // Recursion configuration
-	recursion {{ bind9_recursor|default()|ternary('yes', 'no') }};
-	allow-recursion { {{ bind9_acl_network|default()|ternary('networks', 'any') }}; };
+    recursion {{ bind9_recursor|default()|ternary('yes', 'no') }};
+    allow-recursion { {{ bind9_acl_network|default()|ternary('networks', 'any') }}; };
 {% endif %}
     // Limit querying
-	allow-query { {% if bind9_acl_network|default() %}networks{% else %}any{% endif %}; };
+    allow-query { {% if bind9_acl_network|default() %}networks{% else %}any{% endif %}; };
+
+    // Disable zone transfers by default
+    allow-transfer { none; };
+
 };
 
 {% if bind9_acl_networks|default() %}
@@ -49,7 +53,7 @@ acl networks {
 {% endif %}
 
 {% for zone in bind9_zones|selectattr('ddns_update_key','defined')|list|default([]) %}
-{%   if zone_type|default(bind9_zone_type|default('master')) == 'master' %}
+{%   if zone_type|default(bind9_zone_type|default('primary')) == 'primary' %}
 {%     if loop.first %}
 // The following keys are used for dynamic DNS updates
 {%     endif %}

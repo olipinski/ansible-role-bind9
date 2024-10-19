@@ -12,7 +12,6 @@ bind9_packages:
 # Configuration directories
 bind9_zonedir: /etc/bind/zones
 bind9_keydir: /etc/bind/keys
-bind9_local_keydir: files/bind/zones
 
 # Enable IPv6
 bind9_enable_ipv6: false

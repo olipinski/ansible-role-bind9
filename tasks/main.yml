@@ -73,7 +73,7 @@
     label: "{{ item.name }}"
   when:
     - bind9_authoritative | default()
-    - item.type | default(bind9_zone_type) == 'master'
+    - item.type | default(bind9_zone_type) == 'primary'
   notify:
     - Reload bind9
 
@@ -85,7 +85,7 @@
   loop: "{{ bind9_zones }}"
   loop_control:
     label: "{{ item.name }}"
-  when: item.type | default(bind9_zone_type) == 'master'
+  when: item.type | default(bind9_zone_type) == 'primary'
   changed_when: true
   vars:
     ansible_ssh_pipelining: true
