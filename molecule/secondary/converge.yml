@@ -1,0 +1,95 @@
+---
+- name: DNS1
+  hosts: ns1.homelab.example.com
+  become: true
+  gather_facts: true
+  roles:
+    - role: ricsanfre.bind9
+      bind9_authoritative: true
+      bind9_forward: true
+      bind9_recursor: true
+      bind9_forward_servers:
+        - 8.8.8.8
+        - 4.4.4.4
+      bind9_generate_ddns_key: true
+      bind9_zones:
+        - name: homelab.example.com
+          type: primary
+          secondary_servers:
+            - 10.11.0.12
+          ddns_update_key: ddnskey
+          ddns_update_policy_grant: "zonesub any"
+          default_ttl: 600
+          serial: 2024101102
+          refresh: 1D
+          retry: 2H
+          expire: 1000H
+          # NS and other pre-formatted records values must be given as full qualified domain names, with or without final dot, but not relative to the zone
+          primary: ns.homelab.example.com         # Optional, if you don't define it, firs NS is taken
+          admin: admin.example.com
+          ns_records:
+            - ns1.homelab.example.com
+            - ns2.homelab.example.com
+          # RR values are either relative to the zone, either with a final dot when outside.
+          rrs:
+            - label: ns1
+              type: A
+              rdata: 10.11.0.11
+            - label: ns2
+              type: A
+              rdata: 10.11.0.12
+            - label: node1
+              type: A
+              rdata: 10.11.0.21
+            - label: node2
+              type: A
+              rdata: 10.11.0.22
+        - name: 11.10.in-addr.arpa
+          type: primary
+          default_ttl: 600
+          serial: 2024101102
+          refresh: 1D
+          retry: 2H
+          expire: 1000H
+          # NS and other pre-formatted records values must be given as full qualified domain names, with or without final dot, but not relative to the zone
+          primary: ns1.homelab.example.com         # Optional, if you don't define it, firs NS is taken
+          admin: admin.homelab.example.com
+          ns_records:
+            - ns1.homelab.example.com.
+            - ns2.homelab.example.com.
+          # RR values are either relative to the zone, either with a final dot when outside.
+          rrs:
+            - label: 0.1
+              type: PTR
+              rdata: ns1.homelab.example.com
+            - label: 0.2
+              type: PTR
+              rdata: ns2.homelab.example.com.
+            - label: 0.21
+              type: PTR
+              rdata: node1.homelab.example.com.
+            - label: 0.22
+              type: PTR
+              rdata: node2.homelab.example.com.
+
+- name: DNS1
+  hosts: ns2.homelab.example.com
+  become: true
+  gather_facts: true
+  roles:
+    - role: ricsanfre.bind9
+      bind9_authoritative: true
+      bind9_forward: true
+      bind9_recursor: true
+      bind9_forward_servers:
+        - 8.8.8.8
+        - 4.4.4.4
+      bind9_zones:
+        - name: homelab.example.com
+          type: secondary
+          primary_servers:
+            - 10.11.0.11
+        - name: 11.10.in-addr.arpa
+          type: secondary
+          primary_servers:
+            - 10.11.0.11

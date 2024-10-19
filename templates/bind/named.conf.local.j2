@@ -18,18 +18,21 @@ zone "{{ zone.name }}" {
         grant {{ zone.ddns_update_key }} {{ zone.ddns_update_policy_grant }};
     };
 {%     endif %}
+{%     if zone.secondary_servers|default()  %}
+    allow-transfer {
+{%        for secondary in zone.secondary_servers %}
+        {{ secondary }};
+{%         endfor %}
+    };
+{%     endif %}
 {%   elif zone_type == 'secondary' %}
     file "/var/lib/bind/db.{{ zone.name }}";
-{%     if zone.masters|default() or bind9_masters|default() %}
+{%     if zone.primary_servers|default() %}
     notify no;
-    masters {
-{%       if zone.masters|default() %}
-{%         for master in zone.masters %}
-        {{ master }};
-{%         endfor %}
-{%       elif bind9_masters|default() %}
-{%         for master in bind9_masters %}
-        {{ master.name }};
+    primaries {
+{%       if zone.primary_servers|default() %}
+{%         for primary in zone.primary_servers %}
+        {{ primary }};
 {%         endfor %}
 {%       endif %}
     };
