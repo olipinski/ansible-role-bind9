@@ -1,6 +1,5 @@
 ---
 - name: Determine if DDNS key already exists
-  become: false
   ansible.builtin.stat:
     path: "/etc/bind/keys/{{ item.ddns_update_key }}.key"
   register: update_keyfile_tmp
