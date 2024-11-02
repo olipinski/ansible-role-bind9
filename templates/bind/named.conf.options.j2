@@ -53,7 +53,7 @@ acl networks {
 {% endif %}
 
 {% for zone in bind9_zones|selectattr('ddns_update_key','defined')|list|default([]) %}
-{%   if zone_type|default(bind9_zone_type|default('primary')) == 'primary' %}
+{%   if zone.type|default(bind9_zone_type|default('primary')) == 'primary' %}
 {%     if loop.first %}
 // The following keys are used for dynamic DNS updates
 {%     endif %}
