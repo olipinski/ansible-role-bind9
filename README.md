@@ -91,7 +91,7 @@ Available variables are listed below along with default values (see `defaults\ma
   ```yaml
   # Enable logging
   bind9_named_logging: false
-  bind9_log_path: /var/log/bind
+  bind9_log_path: /var/log/named
   ```
 
 - Configure Zone files
