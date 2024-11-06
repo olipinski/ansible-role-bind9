@@ -27,10 +27,18 @@ Available variables are listed below along with default values (see `defaults\ma
   bind9_user: bind
   bind9_group: bind
   ```
-  By default Ubuntu packages install bind configuration files in (`/etc/bind`). Additional directories are created to place zone files (`bind9_zonedir`) and Dynamic DNS (DDNS) keys(`bind9_keydir`)
+  By default Ubuntu packages install bind configuration files in (`/etc/bind`). Additional directories is created to store Dynamic DNS (DDNS) keys(`bind9_keydir`)
+
+  Ubuntu packate configure Apparmor permissions so `/var/lib/bind` directory is configured with proper permissions. That is the folder that must be used to store the zone files in case DDNS is in going to be used. If that directory is not uses DDNS updates are not working because of permission issues.
+
+  Ansible variable (`bind9_zonedir`) contains that path and it should not be modified. See https://ubuntu.com/server/docs/domain-name-service-dns
+
+  > Note:
+  > If BIND will be receiving automatic updates to the file as with DDNS, then use /var/lib/bind/db.example.com rather than /etc/bind/db.example.com both here and in the copy command below.
+
   ```yml
   # Configuration directories
-  bind9_zonedir: /etc/bind/zones
+  bind9_zonedir: /var/lib/bind
   bind9_keydir: /etc/bind/keys
   ```
 
@@ -78,6 +86,12 @@ Available variables are listed below along with default values (see `defaults\ma
   bind9_acl_networks:
     - 10.10.0.0/16
     - 10.20.0.0/16
+  ```
+  Enable logging
+  ```yaml
+  # Enable logging
+  bind9_named_logging: false
+  bind9_log_path: /var/log/bind
   ```
 
 - Configure Zone files

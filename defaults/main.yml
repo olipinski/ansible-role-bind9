@@ -10,7 +10,9 @@ bind9_packages:
   - dnsutils
 
 # Configuration directories
-bind9_zonedir: /etc/bind/zones
+# Ubuntu installation configures apparmor policies
+# Zones files and journals expected in /var/lib/bind
+bind9_zonedir: /var/lib/bind
 bind9_keydir: /etc/bind/keys
 
 # Enable IPv6
@@ -50,3 +52,7 @@ bind9_generate_ddns_key: true
 # bind9_zone_dynamic: zone files created from template (see
 #         `templates/bind/zones/db.template.j2` for yaml structure)
 bind9_zones: []
+
+# Enable logging
+bind9_named_logging: false
+bind9_log_path: /var/log/bind

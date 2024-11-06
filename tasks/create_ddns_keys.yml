@@ -8,6 +8,4 @@
 - name: Generate DDNS key
   ansible.builtin.shell: "tsig-keygen -a {{ item.ddns_update_key_algorithm | d('hmac-sha512') }} {{ item.ddns_update_key }} > /etc/bind/keys/{{ item.ddns_update_key }}.key"
   changed_when: true
-  args:
-    chdir: "{{ bind9_zonedir }}"
   when: item.ddns_update_key is defined and not update_keyfile_tmp.stat.exists

@@ -5,15 +5,6 @@
     state: present
     cache_valid_time: 600
 
-- name: Create bind9 directory for master zones
-  ansible.builtin.file:
-    path: "{{ bind9_zonedir }}"
-    state: directory
-    owner: root
-    group: "{{ bind9_group }}"
-    mode: "02775"
-  when: bind9_authoritative | default()
-
 - name: Create bind9 directory for keys
   ansible.builtin.file:
     path: "{{ bind9_keydir }}"
@@ -38,6 +29,15 @@
   loop_control:
     label: "{{ item.name }}"
   when: bind9_generate_ddns_key | bool
+
+- name: Ensure existence of the log directory
+  ansible.builtin.file:
+    path: "{{ bind9_log_path }}"
+    state: directory
+    owner: "{{ bind9_user }}"
+    group: "{{ bind9_group }}"
+    mode: 0755
+  when: bind9_named_logging
 
 - name: Configure bind9 named.conf files
   ansible.builtin.template:
