@@ -190,6 +190,18 @@ Zone files definition
       primary_servers:
         - 10.11.0.11
   ```
+- Null forwarders configuration
+
+ If you would like to be able delegate a subdomain from your authoritative server to another server, you may need to set `null_forwarders` to true. This enables the delegtion and proper name resolution when running both an authoritative server, and a general forwarder. For more details see https://kb.isc.org/docs/aa-00538.
+
+  ```yaml
+  bind9_zones:
+    - name: homelab.example.com
+      type: primary
+      secondary_servers:
+        - 10.11.0.12
+      null_forwarders: true
+  ```
   
 
 
@@ -229,6 +241,7 @@ The following playbook install and configure DNS server as authoritative server 
           refresh: 1D
           retry: 2H
           expire: 1000H
+          null_forwarders: false
           primary: ns.homelab.example.com
           admin: admin.example.com
           ns_records:
