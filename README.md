@@ -163,7 +163,7 @@ Zone files definition
   ```yaml
   bind9_zones:
     - name: homelab.example.com
-      type: master
+      type: primary
       ddns_update_key: ddnskey
       ddns_update_policy_grant: "zonesub any"
   ```
