@@ -11,7 +11,7 @@
     state: directory
     owner: "{{ bind9_user }}"
     group: "{{ bind9_group }}"
-    mode: 02750
+    mode: '02750'
   when: bind9_authoritative | default()
 
 - name: Disable IPv6
@@ -36,7 +36,7 @@
     state: directory
     owner: "{{ bind9_user }}"
     group: "{{ bind9_group }}"
-    mode: 0755
+    mode: '0755'
   when: bind9_named_logging
 
 - name: Configure bind9 named.conf files
