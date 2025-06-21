@@ -46,5 +46,8 @@ zone "{{ zone.name }}" {
    }; 
 {%     endif %}
 {%   endif %}
+{%   if zone.null_forwarders is defined and zone.null_forwarders and not zone_type == 'forward' %}
+    forwarders {};
+{%   endif %}
 };
 {% endfor %}
