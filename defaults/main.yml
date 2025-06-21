@@ -43,7 +43,7 @@ bind9_dnssec_validation: "auto"
 bind9_acl_networks: []
 
 # Default zone type
-bind9_zone_type: master
+bind9_zone_type: primary
 
 # Generate DDNS key
 bind9_generate_ddns_key: true
