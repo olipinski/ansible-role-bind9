@@ -28,7 +28,7 @@ options {
 {% if bind9_enable_ipv6 %}
 	listen-on-v6 { {% if bind9_listen_on_v6|default() %}{% for ip in bind9_listen_on_v6 %}{{ ip }};{% endfor %}{% else %}any{% endif %}; };
 {% endif %}
-	listen-on { {% if bind9_listen_on|default() %}{% for ip in bind9_listen_on %}{{ ip }};{% endfor %}{% else %}any{% endif %}; };
+	listen-on { {% if bind9_listen_on|default() %}{% for ip in bind9_listen_on %}{{ ip }}; {% endfor %}{% else %}any;{% endif %} };
 {% if bind9_recursor %}
     // Recursion configuration
     recursion {{ bind9_recursor|default()|ternary('yes', 'no') }};
